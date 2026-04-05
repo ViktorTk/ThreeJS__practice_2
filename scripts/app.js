@@ -40,6 +40,26 @@ const config = {
 // // Работа со сценой
 const scene = new THREE.Scene()
 
+// фон сцены
+
+function createSkyGradient() {
+  const canvas = document.createElement('canvas')
+  canvas.width = 1
+  canvas.height = 256
+  const ctx = canvas.getContext('2d')
+  const gradient = ctx.createLinearGradient(0, 0, 0, 256)
+  gradient.addColorStop(0, '#0038a8')
+  gradient.addColorStop(1, '#66a3ff')
+  ctx.fillStyle = gradient
+  ctx.fillRect(0, 0, 1, 256)
+
+  return canvas
+}
+
+const gradientTexture = new THREE.CanvasTexture(createSkyGradient())
+scene.background = gradientTexture
+
+// камера
 const camera = new THREE.PerspectiveCamera(
   config.camera.fov,
   window.innerWidth / window.innerHeight,

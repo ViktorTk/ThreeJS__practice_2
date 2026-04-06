@@ -27,7 +27,7 @@ const config = {
   },
   camera: {
     fov: 60,
-    position: [0, 0, 0],
+    position: [4, 4, 8],
     near: 0.1,
     far: 1000,
   },
@@ -39,6 +39,20 @@ const config = {
 
 // // Работа со сценой
 const scene = new THREE.Scene()
+
+// загрузчик
+const loader = new GLTFLoader()
+
+const processModel = (gltf) => {
+  scene.add(gltf.scene)
+}
+
+loader.load(
+  '../models/scene.glb',
+  processModel,
+  (progress) => {},
+  (error) => {},
+)
 
 // освещение
 scene.add(new THREE.AmbientLight('#fff', config.lighting.ambientIntensity))
@@ -99,11 +113,21 @@ renderer.setSize(window.innerWidth, window.innerHeight)
 
 document.body.appendChild(renderer.domElement)
 
+const controls = new OrbitControls(camera, renderer.domElement)
+controls.enableDamping = true
+controls.dampingFactor = 0.05
+// отключаем ручное управление камерой
+controls.enableRotate = false
+controls.enableZoom = false
+controls.enablePan = false
+
 // // Цикличная функция анимации
 const animate = () => {
   requestAnimationFrame(animate)
 
   stats.begin()
+
+  controls.update()
 
   renderer.render(scene, camera)
 

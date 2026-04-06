@@ -40,6 +40,21 @@ const config = {
 // // Работа со сценой
 const scene = new THREE.Scene()
 
+// освещение
+scene.add(new THREE.AmbientLight('#fff', config.lighting.ambientIntensity))
+
+const directionalLight = new THREE.DirectionalLight(
+  '#fff',
+  config.lighting.directionalIntensity,
+)
+directionalLight.position.set(...config.lighting.directionalPosition)
+directionalLight.castShadow = true
+directionalLight.shadow.mapSize.width = config.shadows.resolution
+directionalLight.shadow.mapSize.height = config.shadows.resolution
+directionalLight.shadow.normalBias = config.shadows.normalBias
+directionalLight.shadow.camera.far = 50
+scene.add(directionalLight)
+
 // фон сцены
 
 function createSkyGradient() {

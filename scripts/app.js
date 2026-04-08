@@ -44,6 +44,7 @@ const scene = new THREE.Scene()
 const loader = new GLTFLoader()
 
 const processModel = (gltf) => {
+  gltf.scene.rotation.y = Math.PI / 2
   scene.add(gltf.scene)
 }
 
@@ -121,11 +122,30 @@ controls.enableRotate = false
 controls.enableZoom = false
 controls.enablePan = false
 
+const mouse = { x: 0, y: 0 }
+const targetCamera = {
+  x: 0,
+  y: 0,
+  z: 0,
+  offsetX: 0,
+  offsetY: 0,
+  offsetZ: 0,
+}
+
 // // Цикличная функция анимации
 const animate = () => {
   requestAnimationFrame(animate)
 
   stats.begin()
+
+  targetCamera.x = targetCamera.offsetX + 5 * Math.cos(mouse.x * Math.PI * 0.3)
+  targetCamera.y = targetCamera.offsetY + 2 * mouse.y * 1.25
+  targetCamera.z = targetCamera.offsetZ + 5 * Math.sin(mouse.x * Math.PI * 0.3)
+
+  camera.position.lerp(
+    new THREE.Vector3(targetCamera.x, targetCamera.y, targetCamera.z),
+    0.045,
+  )
 
   controls.update()
 
@@ -135,6 +155,11 @@ const animate = () => {
 }
 
 animate()
+
+document.addEventListener('mousemove', (e) => {
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1
+})
 
 // // Корректное изменение размеров canvas в зависимости от изменений окна браузера
 window.addEventListener('resize', () => {

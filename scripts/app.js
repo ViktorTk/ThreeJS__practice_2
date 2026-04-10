@@ -22,7 +22,7 @@ const config = {
   },
   lighting: {
     ambientIntensity: 0.4,
-    directionalIntensity: 2,
+    directionalIntensity: 1.75,
     directionalPosition: [5, 10, 7],
   },
   camera: {
@@ -144,10 +144,27 @@ const targetCamera = {
   x: 0,
   y: 0,
   z: 0,
-  offsetX: 4,
+  offsetX: 1.5,
   offsetY: 3,
   offsetZ: 0,
 }
+
+// // Работа с эффектами
+
+// scene.fog = new THREE.Fog('#fff', 1, 8)
+
+const composer = new EffectComposer(renderer)
+
+const renderPass = new RenderPass(scene, camera)
+composer.addPass(renderPass)
+
+const bloomPass = new UnrealBloomPass(
+  new THREE.Vector2(window.innerWidth, window.innerHeight),
+  0.5,
+  1,
+  0.4,
+)
+composer.addPass(bloomPass)
 
 // // Цикличная функция анимации
 const animate = () => {
@@ -166,30 +183,33 @@ const animate = () => {
 
   controls.update()
 
-  renderer.render(scene, camera)
+  // renderer.render(scene, camera)
+  composer.render()
 
   stats.end()
 }
 
 animate()
 
-// // Смещение камеры в зависимости от положения курсора
+// // // Смещение камеры в зависимости от положения курсора
 // document.addEventListener('mousemove', (e) => {
 //   mouse.x = (e.clientX / window.innerWidth) * 2 - 1
 //   mouse.y = -(e.clientY / window.innerHeight) * 2 + 1
 // })
 
-document.addEventListener('mousemove', (e) => {
-  const mouseX = (e.clientX / window.innerWidth) * 2 - 1
-  const mouseY = -(e.clientY / window.innerHeight) * 2 + 1
-  directionalLight.position.x = mouseX * 10
-  directionalLight.position.y = mouseY * 10
-})
+// // // Смещение источника освещения в зависимости от положения курсора
+// document.addEventListener('mousemove', (e) => {
+//   const mouseX = (e.clientX / window.innerWidth) * 2 - 1
+//   const mouseY = -(e.clientY / window.innerHeight) * 2 + 1
+//   directionalLight.position.x = mouseX * 10
+//   directionalLight.position.y = mouseY * 10
+// })
 
 // // Корректное изменение размеров canvas в зависимости от изменений окна браузера
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight
   camera.updateProjectionMatrix()
 
-  renderer.setSize(window.innerWidth, window.innerHeight)
+  // renderer.setSize(window.innerWidth, window.innerHeight)
+  composer.setSize(window.innerWidth, window.innerHeight)
 })

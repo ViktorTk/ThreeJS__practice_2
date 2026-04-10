@@ -45,6 +45,23 @@ const loader = new GLTFLoader()
 
 const processModel = (gltf) => {
   gltf.scene.rotation.y = Math.PI / 2
+
+  gltf.scene.traverse((child) => {
+    if (child.isMesh) {
+      child.material = new THREE.MeshStandardMaterial({
+        map: child.material.map,
+        color: child.material.color,
+        transparent: child.material.transparent,
+        opacity: child.material.opacity,
+        alphaMap: child.material.alphaMap,
+        roughness: 0.7,
+        metalness: 0,
+      })
+      child.castShadow = true
+      child.receiveShadow = true
+    }
+  })
+
   scene.add(gltf.scene)
 }
 
@@ -127,8 +144,8 @@ const targetCamera = {
   x: 0,
   y: 0,
   z: 0,
-  offsetX: 0,
-  offsetY: 0,
+  offsetX: 4,
+  offsetY: 3,
   offsetZ: 0,
 }
 
@@ -156,9 +173,17 @@ const animate = () => {
 
 animate()
 
+// // Смещение камеры в зависимости от положения курсора
+// document.addEventListener('mousemove', (e) => {
+//   mouse.x = (e.clientX / window.innerWidth) * 2 - 1
+//   mouse.y = -(e.clientY / window.innerHeight) * 2 + 1
+// })
+
 document.addEventListener('mousemove', (e) => {
-  mouse.x = (e.clientX / window.innerWidth) * 2 - 1
-  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1
+  const mouseX = (e.clientX / window.innerWidth) * 2 - 1
+  const mouseY = -(e.clientY / window.innerHeight) * 2 + 1
+  directionalLight.position.x = mouseX * 10
+  directionalLight.position.y = mouseY * 10
 })
 
 // // Корректное изменение размеров canvas в зависимости от изменений окна браузера

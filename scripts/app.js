@@ -6,8 +6,10 @@ import Stats from 'three/addons/libs/stats.module.js'
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js'
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js'
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { BokehPass } from 'three/addons/postprocessing/BokehPass.js'
+import { FXAAShader } from 'three/addons/shaders/FXAAShader.js'
 import { VignetteShader } from 'three/addons/shaders/VignetteShader.js'
 
 // // Отображение FPS
@@ -117,7 +119,7 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.set(...config.camera.position)
 
 const renderer = new THREE.WebGLRenderer({
-  antialias: true,
+  // antialias: true,
   powerPreference: 'high-performance',
   depth: true,
 })
@@ -166,6 +168,17 @@ const bloomPass = new UnrealBloomPass(
 )
 composer.addPass(bloomPass)
 
+// // Дополнительная обработка сглаживания
+const fxaaPass = new ShaderPass(FXAAShader)
+fxaaPass.material.uniforms['resolution'].value.set(
+  1 / (window.innerWidth * renderer.getPixelRatio()),
+  1 / (window.innerHeight * renderer.getPixelRatio()),
+)
+composer.addPass(fxaaPass)
+
+const outputPass = new OutputPass()
+composer.addPass(outputPass)
+
 // // Цикличная функция анимации
 const animate = () => {
   requestAnimationFrame(animate)
@@ -212,6 +225,11 @@ window.addEventListener('resize', () => {
 
   renderer.setSize(window.innerWidth, window.innerHeight)
   composer.setSize(window.innerWidth, window.innerHeight)
+
+  fxaaPass.material.uniforms['resolution'].value.set(
+    1 / (window.innerWidth * renderer.getPixelRatio()),
+    1 / (window.innerHeight * renderer.getPixelRatio()),
+  )
 })
 
 document.querySelectorAll('.position').forEach((button) => {

@@ -210,6 +210,16 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight
   camera.updateProjectionMatrix()
 
-  // renderer.setSize(window.innerWidth, window.innerHeight)
+  renderer.setSize(window.innerWidth, window.innerHeight)
   composer.setSize(window.innerWidth, window.innerHeight)
+})
+
+document.querySelectorAll('.position').forEach((button) => {
+  button.addEventListener('click', () => {
+    const position = button.dataset.position.split(', ').map(Number)
+
+    targetCamera.offsetX = position[0]
+    targetCamera.offsetY = position[1]
+    targetCamera.offsetZ = position[2]
+  })
 })

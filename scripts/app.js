@@ -162,11 +162,28 @@ composer.addPass(renderPass)
 
 const bloomPass = new UnrealBloomPass(
   new THREE.Vector2(window.innerWidth, window.innerHeight),
+  0.175,
   0.5,
-  1,
   0.4,
 )
 composer.addPass(bloomPass)
+
+// глубина резкости
+const bokehParams = {
+  focus: 0.5,
+  aperture: 0.002,
+  maxblur: 0.0075,
+}
+
+const bokehPass = new BokehPass(scene, camera, bokehParams)
+composer.addPass(bokehPass)
+
+// затенение по краям
+const vignetteShader = VignetteShader
+const vignettePass = new ShaderPass(vignetteShader)
+vignettePass.uniforms['offset'].value = 1.25
+vignettePass.uniforms['darkness'].value = 1
+composer.addPass(vignettePass)
 
 // // Дополнительная обработка сглаживания
 const fxaaPass = new ShaderPass(FXAAShader)
@@ -232,6 +249,7 @@ window.addEventListener('resize', () => {
   )
 })
 
+// // Блок управления позицией камеры
 document.querySelectorAll('.position').forEach((button) => {
   button.addEventListener('click', () => {
     const position = button.dataset.position.split(', ').map(Number)

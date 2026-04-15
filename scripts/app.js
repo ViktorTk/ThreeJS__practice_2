@@ -42,6 +42,24 @@ const config = {
 // // Работа со сценой
 const scene = new THREE.Scene()
 
+// прелоадер
+const customPreloader = document.getElementById('preloader')
+
+function hidePreloader() {
+  if (!customPreloader) return
+
+  let opacity = 1
+  const fadeInterval = setInterval(() => {
+    opacity -= 0.15
+    customPreloader.style.opacity = opacity
+
+    if (opacity <= 0) {
+      clearInterval(fadeInterval)
+      customPreloader.style.display = 'none'
+    }
+  }, 30)
+}
+
 // загрузчик
 const loader = new GLTFLoader()
 
@@ -65,13 +83,20 @@ const processModel = (gltf) => {
   })
 
   scene.add(gltf.scene)
+
+  hidePreloader()
 }
 
 loader.load(
   '../models/scene.glb',
   processModel,
-  (progress) => {},
-  (error) => {},
+  (progress) => {
+    customPreloader.textContent = `Загрузка ${Math.round((progress.loaded / progress.total) * 100)}%`
+  },
+  (error) => {
+    console.error('Ошибка загрузки модели:', error)
+    // hidePreloader()
+  },
 )
 
 // освещение
